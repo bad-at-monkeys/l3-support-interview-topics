@@ -1,0 +1,290 @@
+---
+*OSI MODEL
+Application - Presentation - Session - Transport - Network - Data-link - Physical
+
+1) Physical (cables, circuits, ethernet, 802.11)
+connection failures, cables, connectors, is it on, power supply
+2) Data Link (mac addresses, ethernet frames)
+check the arp cache
+3/4) Network/Transport (L3:ipv4, ipv6, icmp, ip packets - L4:tcp/udp)
+check ip, drivers, NIC, DNS, DHCP, firewall rules, open/closed ports, monitoring alarms
+5) Session (dhcp, socks, netbios, bgp)
+authentication errors, access permissions, service status, endpoint issues
+6/7) Presentation/Application (L6: how data is packaged - L7: dns, ftp, https, ssh)
+file extensions, application status, application firewall rules, ports again, error logs, access permissions
+
+*TCP/IP MODEL
+Application - Transport - Internet - Network
+
+*Port Numbers
+21 FTP    22 SSH    23 Telnet
+25 SMTP   53 DNS    67/68 DHCP
+80 HTTP   110 POP3  123 NTP
+136/7 NetBIOS  143 IMAP   161/2 SNMP
+389 LDAP  442 HTTPS  SMB 445
+
+
+
+---
+*NETWORKING
+
+*SWITCHES
+
+Layer 2 switches have each port on a different collision domain, but every one on the same broadcast domain. Layer 3 switches have routing capabilities. Layer 2 switches can be either managed by an admin or unmanaged (plug-n-play) and use MAC addresses and data frames as their transmitting mechanism. With switches we can logically separate our LAN into separate VLANs, which are separated networks on the LAN. We can virtually combine these VLANs through bridging, or aggregate traffic flow from multiple VLANs through trunking (802.1q). If we want our VLANs to communicate with another, we must place them on different networks/subnets and the traffic must be forwarded to another by a router.
+
+Switch ports are network devices that function as a multiport network bridge.
+
+Access ports transmit traffic solely with the LAN it is designated.
+
+Trunk ports allows data flow from multiple VLANs across it by identifying frames tagged with the 802.1q protocol.
+
+Bridges combine separate VLANs as if they were a single VLAN and functions by blocking/forwarding data based on MAC address
+
+Spanning Tree Protocol (802.1D) allows redundant switched and bridged paths to transmit data without preventing loops within the LAN. STP has 5 states - disabling, blocking, listening, learning, and forwarding.
+
+Switches use ARP and a CAM table as the mapping of where to route data frames.
+
+
+
+*ROUTERS
+
+Routers are layer 3 networking systems where every port is on a separate collision and broadcast domain and must have two network interfaces at minimum. Routers make forwarding decisions based on IP addresses and transmit data through IP packets across different networks. Routers keep a table of IP addresses and make routing decisions based off of these tables according to their configured protocols. Through Virtual Routing and Forwarding (VRF) we can create multiple virtual routers on one interface and organize the traffic through MPLS tagging.
+
+*IP Addresses are 32-bit addresses split into four octets, with two portions being the network ID which identifies the network/subnet and the host ID which identifies the end client.
+
+On our IP routed networks, we can use *subnetting to logically separate our network into smaller blocks for better routing efficiency. Say a subject was assigned an address block of 192.168.1.0/24 network (subnet mask 255.255.255.0) which has 254 usable hosts. A router would have to find a single host out of that many. We can subnet this network into four different networks using the 192.168.1.0/26 (255.255.255.192) notaion which gives 62 hosts per network:
+
+  -> 192.168.1.1 - 192.168.1.62
+  -> 192.168.1.64 - 192.168.1.126
+  -> 192.168.1.129 - 192.168.1.190
+  -> 192.168.1.193 - 192.168.1.254
+
+On each network there are two reserved IPs that cannot be assigned to a client which are the host ID and the broadcast address.
+
+With our network we can assign addresses to hosts statically or through DHCP. Static routing is assigning an IP to a host that isn't to be changed. To the router, we must define all routes that lead to this address in order for traffic to be routed to it. With DHCP, we give the router pools of addresses and they are automatically assigned for us.
+
+*Routing Protocols/*Dynamic Routing
+
+Unlike static addressing, with dynamic routing we don't have to define the full route to the host. Dynamic routing protocols determine paths to host depending on certain conditions.
+
+*Interior Gateway Protocols
+*OSPF - cost metric using link-state updates and Dijkstra's algorithm
+*EIGRP - Link-state/Distance vector protocol using hop count, link state updates, and a dual FSM.
+*RIP - distance vector protocol using hop count as a metric
+*IS-IS - Link-state protocol using Dijkstra's algorithm, less extensions than OSPF
+
+*Border Gateway Protocol
+BGP is the protocol of the internet and uses AS numbers that represent a prefiix address for regional network operators.
+
+*HSRP
+Not a routing protocol, but a protocol for routers to create a fault-tolerant network of redundant routers. If one router fails, there is a mechanism that elects another router to take its place.
+
+
+---
+Cisco IOS
+
+sh run
+sh int status
+sh int trunk
+sh vlan
+sh ip [routing protocol] neigh
+sh port summary
+sh int summary
+ip routing    # turns routing on
+sh ip in br
+sh ip route
+sh sp summary
+sh ap config
+sh 802.11ax txpower
+sh ap cdp neigh
+sh client summary
+
+
+
+
+---
+*POSTGRESQL (PORT 5432)
+
+"Error fatal role", create user, create db, create table (columns/rows), view table, check chache:
+
+$ id postgre
+$ su - postgres
+$ sudo passwd postgres
+$ sudo -u postgres
+postgres# CREATE USER username WITH PASSWORD 'password';
+postgres# CREATE DATABASE testdb;
+postgres# GRANT ALL [LIST PRIVELAGES] ON DATABASE [database_name] TO [new_username];
+postgres# EXIT;
+postgres@localhost:~$ exit
+
+$ psql -U username -d testdb
+testdb=> CREATE TABLE quarter_totals (
+column1 int,
+column2 int   
+);
+testdb=> INSERT INTO quarter_totals (column1, column2)
+VALUES (137, 155);
+INSERT 0 1
+testdb=> \dt
+             List of relations
+ Schema |     Name      | Type  |  Owner   
+--------+---------------+-------+----------
+ public | city_states   | table | tylerbrw
+ public | quater_totals | table | tylerbrw
+(2 rows)
+testdb=> SELECT name, setting
+FROM pg_settings
+WHERE name = 'shared_buffers';
+      name      | setting 
+----------------+---------
+ shared_buffers | 16384
+(1 row)
+testdb=> \q
+
+
+Clear cache:
+$ sudo service postgresql stop
+$ sudo -u postgres pg_resetxlog /path/to/data_directory
+$ sudo service postgresql start
+
+
+Check for connections and listening ports:
+/etc/postgresql/{version}/main/pg_hba.conf  &&  /etc/postgresql/{version}/main/postgresql.conf
+
+Create DB, user, then perms:
+$ sudo systemctl status postgresql
+$ sudo systemctl start postgresql
+$ createdb -U [username] -h localhost -p 5432 testdb
+
+
+
+
+---
+*LINUX
+
+$ man hier
+/ /bin /boot /dev /etc /home /lib /media /mnt /opt /proc /root /run /sbin /srv /sys /tmp /usr /var
+* we can use /dev/null as a writeable location to discard data
+
+Error logs
+Set up SNMP MIB and agents
+/var/logs/syslog  /var/log/messages  /var/log/auth.log  /var/log/secure  /var/log/kern.log
+
+$ ls -tharl
+
+$ rmmod/modprobe    # remove module from kernel
+$ partprobe    # detect partition changes
+$ mtr    # diagnose the network
+$ ifcfg    # ip management
+$ visudo
+$ chage
+
+SGID - represents a group
+setenforce 1 - enable SELinux policies
+
+$ firewall-cmd --zone=dmz --addservice=ntp
+$ polkit    # authorization framework
+$ tail
+$ head
+$ tr    # translate chars to STDOUT
+$ pvscan    # list all physical vols
+$ lvscan    # list all logical vols
+$ chown/chgroup/chmod
+$ chmod u+rwx, g+wx, o+x foo.pdf
+$ netstat -tuln | grep:[port-num]
+$ host website.com    # check dns resolution
+$ lsof    # list open files
+
+Overwrite - > < 2>
+Append - >> << 2>>
+
+Renew dhcp lease:
+$ sudo dhclient -r
+$ sudo dhclient
+$ ip link show
+
+*DNS:
+$ host
+$ hostname
+$ nslookup
+$ dig
+$ whois
+$ dnsmasq
+
+/etc/hosts
+/etc/resolv.conf
+
+
+
+---
+*APACHE
+
+$ systemctl status apache2    # check status
+$ apachectl configtest    # check config
+$ tail -f /var/log/apache2/error.log
+$ tail -f /var/log/apache2/access.log
+$ apachectl fullstatus
+$ apache2 -S    # verify virtual host config
+$ curl -I http://[server-ip]/    # test connection
+
+
+
+---
+*SERVER ISSUES
+
+How to deploy a new server?
+First install updates. then configure security settings by disabling unused services/ports, defining firewall rules, enabling anti-virus (if present), then connect to network. Create shared folders for different groups of users and set access controls. Last, configure backups and disaster recovery procedures.
+
+
+Network connectivity issues?
+Check the physical adapter, if connected and operational then check device manager. Check the network logs. Use ping and tracert to diagnose packet loss/latency. Check ipconfig /all to troubleshoot DHCP, DNS, Get-NetRoute, gateway, and the IP. Check the firewall rules (ufw, iptables)
+
+
+Server migration?
+Create migration plan with timeline, list of servers and applications, list of risks and issues. Create a backup plan. Test in a non-prod environment. Migrate during planned maintenance window. Verify.
+
+
+Set up a virtualized environment on a server host?
+Ensure there is enough resources. Configure the virtual switch to isolate from host network. Install virtualization software. Configure the VMs resources. Configure backups. Patch and update.
+
+
+Performance issues?
+Check resource utilization and running processes. Check the system log/event files. Compare the current running machine state with a benchmark using performance monitoring tools. If its a network issue, we can check network speed and latency with ping and traceroute then check the routing table, DHCP, subnet, and DNS settings.
+
+
+*STORAGE
+RAID - Combining multiple storage drives in one or more units for redundancy, better performance, or both. RAID utilizes storage techniques of parity, striping, and mirroring either independently or together.
+
+Input/Output Operations Per Second (IOPS) - a measurement to determine the performance of a storage drive.
+
+
+
+---
+WINDOWS
+
+DNS
+Primary Zone - .dns, normal text file
+Secondary Zone - read-only copy of zone db, acts as a backup on another server provides fault tolerance annd load balancing
+Stub zone - copy of NS and SOA records used to reduce DNS search orders
+
+Iterative query - request for website name/url directly
+Recursive query - request website/url from local DNS
+
+Caching only DNS - references what is already in the DNS cache
+
+LDAP - stores data about orgs, users, groups, and systems and athenticates them according to their permissions
+
+
+AD
+
+AD database location - %systemroot%/ntds
+DC - validates users to network and provides management and storage of AD objects
+
+SYSVOL - stores info on the disk of each DC in the domain, replicated by FRS. Containing policy info.
+
+Deploying a new AD domain?
+Plan domain structure including domain controllers, replication, and group policies. Implement the DCs, ensure synchronization. Create computer, user, and group accounts. set appropriate permissions and access controls. configure group policies and enforce security policies and settings. test the domain.
+
+
+
+

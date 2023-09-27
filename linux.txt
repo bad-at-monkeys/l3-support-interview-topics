@@ -1,0 +1,846 @@
+LINUX STUFF
+
+##########
+
+---
+GENERAL/HARDWARE/SYSTEM
+
+$ uname -a
+$ lshw
+$ lspci
+
+
+List disk usage:
+$ df -h
+$ findmnt -D
+
+Memory usage:
+$ free -h
+
+$ env
+$ $PATH
+
+Show linux version with disk info (using a semicolon):
+$ uname -a; df -h
+$ lsb_release -a
+
+Generate severl passwords:
+$ apg
+
+Search manual page names and desc:
+$ apropos
+
+
+Find the graphics card:
+$ lspci -v | less | grep -i VGA
+
+
+Create an arbitrarily sized file:
+$ truncate -s [size] foo.txt
+$ dd if=/dev/zero of=foo.txt bs=24M count=1
+$ dd if=/dev/zero of=foo.txt bs=1M count=24
+
+
+
+---
+SCRIPTING
+
+Check the exit code of the last command:
+$ echo $?
+
+
+
+################################################################################
+FILESYSTEM/STORAGE/PARTITIONING
+
+List all 10 files from time of last modification, reveresed and in human readable format:
+$ ls -tharl /var/log | tail -10
+-rw-r--r--   1 root              root             6.9K May 22 02:06 ubuntu-advantage-timer.log
+-rw-r--r--   1 root              root             463K May 22 05:18 clienteng-metricagent.log
+-rw-r--r--   1 root              root            1007K May 22 05:54 ubuntu-advantage.log
+-rw-r--r--   1 root              root             797K May 22 05:55 acmed-apt-cache-updates.log
+-rw-r--r--   1 root              root             2.5M May 22 05:59 acmeguardiand.log
+-rw-r-----   1 syslog            adm              5.0M May 22 06:00 amazon-core.log
+-rw-r-----   1 syslog            adm              1.4M May 22 06:00 auth.log
+-rw-r-----   1 syslog            adm              1.6M May 22 06:00 kern.log
+-rw-r-----   1 syslog            adm               13M May 22 06:01 syslog
+-rw-r--r--   1 root              root              17M May 22 06:02 acmed.log
+
+
+
+List open files:
+$ lsof
+
+
+
+List all currently locked files in the system:
+$ lslocks
+
+
+Creating multiple directories with the same prefix, then creating three files in each dir:
+$ mkdir lesson-{1..19} | touch lesson-{1..19}/{test.txt,notes.txt,lab.txt}
+
+
+Append command outpuut to eof:
+$ [ command ] >> filename
+$ echo 'text' | sudo tee -a my_file.txt
+$ echo '104.20.186.5 www.cyberciti.biz' | sudo tee -a /etc/hosts
+
+
+Print files:
+$ cat
+$ more
+$ less
+
+
+
+---
+find
+
+Search for files that match a particular name:
+$ find / -name "*FILENAME*" -ls
+
+Concatenate a bunch of files together:
+$ cat lesson{1..20}/test.txt >> all-test-questions.txt
+
+
+
+---
+Access Controls
+
+List attributes of a directory:
+$ ls -ld [dir]
+
+List attributes of directory contents:
+$ ls -l [dir]
+
+Change file attribute:
+$ chattr
+$ lsattr
+
+$ chown
+$ chmod
+
+$ sudo useradd user01
+$ sudo passwd user01
+$ sudo groupadd admins
+$ sudo usermod -aG admins user01
+$ id user01
+
+Change ownership:
+$ chown -R user01:admins /projects/ITprojects
+$ chown -R user02:devs /projects/devprojects
+$ ls -ld /projects/ITprojects
+$ ls -l /projects/ITprojects
+
+Set permissions:
+$ chmod u=rwx,g=rwx,o=rx /projects/ITprojects
+$ chmod u=rwx,g=rwx,o=rx /projects/devprojects
+
+
+
+Partition and format storage devices:
+$ lsblk
+$ sudo parted /dev/sda mklabel gpt
+$ sudo parted -a opt /dev/sda mkpart primary ext4 0% 100%
+$ lsblk
+$ sudo mkfs.ext4 -L [label] /dev/sda1
+$ lsblk --fs
+$ sudo mkdir -p /mnt/data
+$ sudo mount -o defaults /dev/sda1 /mnt/data
+$ df -h -x tmpfs
+
+To automatically mount the drive at boot:
+$ sudo vim /etc/fstab
+[EDIT]
+. . .
+## Use one of the identifiers you found to reference the correct partition
+# /dev/sda1 /mnt/data ext4 defaults 0 2
+# UUID=4b313333-a7b5-48c1-a957-d77d637e4fda /mnt/data ext4 defaults 0 2
+LABEL=datapartition /mnt/data ext4 defaults 0 2
+$ sudo mount -a
+
+Testing the mount:
+$ echo "success" | sudo tee /mnt/data/test
+$ cat /mnt/data/test_file
+$ sudo rm /mnt/data/test_file
+
+
+Image a storage drive:
+$ sudo umount /dev/sda1
+$ sudo fdisk /dev/sda
+
+
+
+
+
+---
+rsync
+
+Copy the contents of a directory to an external host:
+$ rsync -avu /home/tylerbrw/ tylerbrw.desktop.amazon.com:/backups/tylerbrw_bak/
+
+Specify a dir for backups:
+$ rsync -avu --delete -b --backup-dir="/clientbackups/archives/$(date +"%Y-%m-%d_%H%M")" Desktop/BackupDoc/ tylerbrw.desktop.amazon.com:/clientbackups/BackupDoc/
+
+Running the second as a cron job would be a good idea...
+
+
+
+
+
+################################################################################
+NETWORKING
+
+Hardware IDs:
+$ arp -e
+$ arping -f 10.160.248.1
+
+IP addresses:
+$ ip a s | grep -i 'inet'
+$ ip a s eth0
+$ ip a s wlp0s20f3
+$ ifconfig -a
+
+Show neighbors MAC/IP associations:
+$ arp -e
+$ ip -s neighbor
+
+
+
+
+
+---
+Interfaces
+$ ip a
+$ nstat
+
+List interfaces configured on the local host:
+$ tcpdump -D
+
+We can start a packet capture on an interface with a filter:
+$ tcpdump -i eth1 'ip'
+
+
+
+
+
+---
+Routing
+
+Print the routing table with the arp table:
+$ route -v;echo " ";arp -v
+
+Show the routing table (find the default gateway):
+$ ip -d r s
+$ ip route show  /  $ ip ro sh
+$ route
+$ netstat -r
+
+Test the route between two nodes:
+$ traceroute [ip-addr]
+
+
+
+
+
+---
+Performance
+
+Check ipv4 performance:
+$ netstat -ps ipv4
+$ netstat -i    # -ic continuously monitors the interfaces
+$ nstat
+$ ss -tulpn
+$ ss -s
+
+
+
+
+---
+NetworkManager
+
+NetworkManager's nmcli:
+$ nmcli device show
+
+Identify the location of NetworkManager's configuration files.
+$ nmcli -f NAME,FILENAME connection
+
+
+
+
+
+---
+DHCP
+
+Renew ip:
+$ sudo dhclient -v -r [int]
+$ sudo dhclient
+$ man dhclient
+
+$ sudo ifdown [int]
+$ sudo ifup [int]
+
+$ sudo /etc/init.d/networking restart
+
+
+
+
+
+---
+DNS
+
+$ dnsdomainname
+
+Check the DNS configuration:
+$ resolvectl status
+
+Check if we can get domain records from the DNS server SOA:
+$ dig soa corp.amazon.com
+
+Get the SRV record:
+$ nslookup -type=srv amazon.com
+$ dig SRV _ldap._tcp.corp.515support.com
+
+Working with hostnames:
+$ host 8.8.8.8
+$ host google.com
+$ nslookup 8.8.8.8
+$ nslookup google.com
+$ dig -x 8.8.8.8
+$ dig google.com
+
+View the dns servers:
+$ cat /etc/resolv.conf
+
+
+Get all dns records:
+$ nslookup -type=any amazon.com
+
+
+
+
+
+---
+Ports
+
+$ man nc
+
+Check if a port is open on a host:
+$ nc -z -v -w 5 10.198.174.224 80
+
+Change an snmp string for aprinter with nc:
+$ sudo echo '! U1 setvar "ip.snmp.enable" "off" ' | nc -w 5 [ip-addr] 5964
+$ sudo echo '! U1 getvar "ip.snmp.enable"' | nc -w 5 [ip-addr] 5964
+
+
+
+Scan for web server info:
+$ sudo nc -vn 10.1.16.12 80
+
+Which range of ports are open on a device:
+$ nc -zv google.com 20-60
+
+Listen on a specific port for a connection:
+$ nc -l 1234
+Openn another console (or mmachine), connect to the machine and port
+being listened on:
+$ nc -N 127.0.0.1 1234    # terminate with ^D
+
+Show listening and established tcp/udp only connections:
+$ netstat -tua
+
+$ nmap [ip-address]
+$ ss -tulpn
+$ netstat -tulpn
+$ ss -tua
+$ ss -patn    # PID,active/listening sockets,TCP,suppress name resolution
+
+Print interface statics on listening port 5964/tcp:
+$ sudo netstat -nltp | grep '5964'
+tcp        0      0 0.0.0.0:5964            0.0.0.0:*               LISTEN      30682/lp_server
+
+Change port number:
+$ 
+
+Conduct a banner grab:
+$ sudo nc -vn 10.1.16.12 22
+
+
+List what process is using a specific TCP port:
+$ lsof -i TCP:22
+
+List all network processes associated with an interface:
+$ lsof -i TCP@198.160.0.1
+
+To list all open IPv4 network files in use by the process whose PID is 1234, use:
+$ lsof -i 4 -a -p [PID]
+
+
+Using netcat to download a file from the gopher protocol:
+$ echo path/to/file | nc gopher.website.org 70 > [file]
+
+
+
+
+---
+nmap
+
+Conduct a ping scan on a port with the reverse resolution against hosts:
+$ sudo nmap -sn -PS80 -R -v google.com amazon.com yahoo.com
+
+-PS<port list>
+This sends an empty TCP packet with the SYN flag to establish connection.
+-PA<port list>
+Sends and ACK, can be used to bypass firewalls only blocking SYN probes.
+-PU<port list>
+UDP ping.
+
+Scan for systems on a network:
+$ sudo nmap 10.1.16.0/24
+$ sudo nmap -sn 10.1.16.0/24    # simple scan
+
+Get the OS:
+$ sudo nmap -O 10.1.16.2
+
+Extensive scan:
+$ sudo nmap -A 10.1.16.12
+
+
+
+
+
+---
+Testing
+
+Test communication between two systems by opening a data stream on a port:
+System-A $ nc -l 2080
+System-B $ nc -v 10.198.174.224 2080
+Now these two systems can communicate over port 2080.
+
+
+Packet capture:
+$ sudo tcpdump -i eth0 -vv dst [ip-address]
+$ tcpdump -i eth1 'ip'
+
+
+Download a file from the internet to generate traffic:
+$ wget [ip-addr]/index.html
+
+
+
+
+
+---
+Traffic Shaping
+
+Checking annd the changing the TCP window size:
+node2> iperf -s
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 60.0 KByte (default)
+------------------------------------------------------------
+[  4] local <IP Addr node2> port 5001 connected with <IP Addr node1> port 2357
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0-10.1 sec   6.5 MBytes   5.2 Mbits/sec
+
+node1> iperf -c node2
+------------------------------------------------------------
+Client connecting to node1, TCP port 5001
+TCP window size: 59.9 KByte (default)
+------------------------------------------------------------
+[  3] local <IP Addr node1> port 2357 connected with <IP Addr node2> port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec   6.5 MBytes   5.2 Mbits/sec
+node2> iperf -s -w 130k
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size:  130 KByte
+------------------------------------------------------------
+[  4] local <IP Addr node 2> port 5001 connected with <IP Addr node 1> port 2530
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0-10.1 sec  19.7 MBytes  15.7 Mbits/sec
+
+node1> iperf -c node2 -w 130k
+------------------------------------------------------------
+Client connecting to node2, TCP port 5001
+TCP window size:  129 KByte (WARNING: requested  130 KByte)
+------------------------------------------------------------
+[  3] local <IP Addr node1> port 2530 connected with <IP Addr node2> port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec  19.7 MBytes  15.8 Mbits/sec
+
+
+
+
+
+traceroute, ping, nslookup, pathping, dig, host, route, ip, arp -a, nmap,
+wget, netstat, lnstat,
+
+
+
+---
+tcpdump
+
+Monitor http traffic on a host:
+$ tcpdump -vv dst [ip-add] and port www -w www.pcap
+
+We can examine this file in wireshark
+
+
+
+---
+tftp
+
+Running a tftp server:
+$ sudo apt install tftpd-hpa
+$ sudo systemctl status tftpd-hpa
+$ vim /etc/default/tftpd-hpa
+[EDIT]
+# /etc/default/tftpd-hpa
+
+TFTP_USERNAME="tftp"
+TFTP_DIRECTORY="/srv/tftp"
+TFTP_ADDRESS=":69"
+TFTP_OPTIONS="--secure --create"
+[END]
+$ sudo mkdir /tftp
+$ sudo chown tftp:tftp /tftp
+$ systemctl restart tftpd-hpa
+$ sudo systemctl status tftpd-hpa
+[connect to client]
+$ tftp [client ip]
+tftp> verbose
+tftp> put [file.iso]
+tftp> get [file2.txt]
+
+
+
+
+
+
+################################################################################
+PACKAGE MANAGEMENT
+
+On Ubuntu systems, PPAs and repositories are listed in /etc/apt/sources.list and /etc/apt/sources.list.d/
+
+We can list all of the source repositories with:
+$ grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/*
+
+
+
+
+
+################################################################################
+PROCESSES/SYSTEMD/KERNEL
+
+$ man lsipc
+$ man perf
+Report a snapshot of the current processes:
+$ ps aux
+$ top
+
+$ lsmod
+
+
+Introspect the bus:
+$ busctl
+
+
+List open files:
+$ lsof
+
+List which processes are using a particular directory:
+$ lsof [dir]
+$ lsof /run
+
+List which files a specific process has open:
+$ lsof -p 80
+
+
+List currently accessible namespaces:
+$ lsns
+
+
+
+$ lslogins
+
+Query the pager-end of the systemd jounal with context explanations:
+$ journalctl -xe
+
+
+Confirm a service is running:
+$ netstat -atp UDP | grep [service]
+
+
+Restart syslog service:
+$ sudo systemctl restart rsyslog.service
+
+
+
+Check the PID of the current shell:
+$ ps -p $$
+
+
+
+Find a process PID:
+$ ps aux | grep sshd
+$ sudo fuser -a 53/tcp
+53/tcp:               2215  3070
+$ sudo fuser 22/tcp
+22/tcp:               1793
+
+
+Explore the memory utilization of a process:
+$ sudo pmap [PID] | more
+
+
+
+Find processes being used in a directory:
+$ sudo fuser -v /home/tylerbrw
+
+Then grep for the process in ps, the service running ssh is sshd in this case:
+$ ps -ef | grep "1793"
+root        1793       1  0 06:08 ?        00:00:00 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+tylerbrw   72780   72024  0 06:29 pts/2    00:00:00 grep --color=auto 1793
+
+
+Another example on pslips:
+$ sudo fuser 5964/tcp
+30682
+$ sudo ps -ef | grep 30682
+30682 root     /usr/local/bin/lp_server -n 5964 -d /dev/usb/lp2
+
+
+
+Print interface statics on listening port 5964/tcp:
+$ sudo netstat -nltp | grep '5964'
+tcp        0      0 0.0.0.0:5964            0.0.0.0:*               LISTEN      30682/lp_server
+
+
+
+Scan for neighbors:
+$ netdiscover -i [interface] -r [network]
+
+
+
+Connect to an HTTP server with curl, we can do this to determine software types and versions:
+$ curl -s -I 10.1.0.1
+
+
+
+---
+SYSTEMD
+
+List all unit files and their state:
+$ systemctl list-unit-files
+
+Start NetworkManager:
+$ systemctl reload NetworkManager.service
+
+
+
+
+
+
+
+
+################################################################################
+LOGS
+
+Check the last 5 lines of the syslog:
+$ sudo tail -5 /var/log/syslog
+May 22 05:40:44 u39190a389f8a59 slack.desktop[38903]: [05/22/23, 05:40:44:674] info: [RTM] Waited 11 ms, processing more rtm events now
+May 22 05:40:46 u39190a389f8a59 manage[690843]: Not 12 hours since last run, use --force to run anyway
+May 22 05:40:50 u39190a389f8a59 kernel: [84764.324857] audit: type=1400 audit(1684752050.045:7473): apparmor="ALLOWED" operation="open" class="file" profile="/usr/sbin/sssd" name="/proc/695818/cmdline" pid=1727 comm="sssd_nss" requested_mask="r" denied_mask="r" fsuid=0 ouid=0
+May 22 05:40:50 u39190a389f8a59 kernel: [84764.328697] audit: type=1400 audit(1684752050.049:7474): apparmor="ALLOWED" operation="open" class="file" profile="/usr/sbin/sssd" name="/proc/695818/cmdline" pid=1728 comm="sssd_pam" requested_mask="r" denied_mask="r" fsuid=0 ouid=0
+May 22 05:40:50 u39190a389f8a59 kernel: [84764.329798] audit: type=1400 audit(1684752050.049:7475): apparmor="ALLOWED" operation="open" class="file" profile="/usr/sbin/sssd" name="/run/systemd/users/641952313" pid=1728 comm="sssd_pam" requested_mask="r" denied_mask="r" fsuid=0 ouid=0
+
+
+
+
+
+
+
+---
+HARDWARE
+
+$ sudo lshw
+$ lsmem
+$ lscpu
+
+
+
+Print devices on the board:
+$ lspci | grep -i 'Wi-fi'
+00:14.3 Network controller: Intel Corporation Wi-Fi 6 AX201 (rev 20)
+
+
+Print block devices:
+$ lsblk -a
+
+
+
+
+
+---
+SECURITY/CONTROL/MONITORING
+
+List groups a user belongs:
+$ groups tylerbrw
+
+
+List last logged in users:
+$ last
+$ lastlog
+
+
+
+Check the status of LSASS AD bridge:
+$ /opt/pbis/bin/get-status
+
+
+
+List which files a process has open:
+$ lsof -p 80
+
+List which processes are using files in a certain directory:
+$ lsof /run
+
+List which files a user has open:
+$ lsof -u admin
+
+
+
+iptables
+NOTE: it is good practice to deny outbound traffic and drop inbound traffic
+
+$ sudo iptables -S
+
+DROP inbound HTTP connections:
+$ iptables -I INPUT 1 -p tcp --destination-port 80 -j DROP
+
+ACCEPT inbound HTTP connections:
+$ iptables -I INPUT 1 -p tcp --destination-port 80 -j ACCEPT
+
+Enable iptables logging:
+iptables -I INPUT 1 -j LOG
+
+Delete an entry:
+$ sudo iptables -L --line-numbers
+$ sudo iptables -D INPUT [line-number]
+
+Display destination port traffic in the logs:
+$ tail /var/log/kern.log | grep "[port-number]"
+
+
+
+OpenSSL
+$ openssl version
+$ mkdir keys
+$ cd keys
+[generate key]
+$ openssl genrsa -out corp.515support.com.key 2048
+$ cat corp.515support.com.key 2048
+[extract public key to file]
+$ openssl rsa -in corp.515support.com.key
+$ cat corp.515support.com_public.key
+[generate cert signing requuest]
+$ openssl req -new -key corp.515support.com.key -out corp.515support.com.csr
+[verify request]
+$ openssl req -text -in corp.515support.com.csr -noout -verify
+$ cat corp.515support.com.csr
+[generate self-signed cert]
+$openssl req -newkey rsa:2048 -nodes -keyout corp.515support.com.key -x509 -days 365 -out corp.515support.com.crt
+[merge .key & .crt into a .pfx]
+$ openssl pkcs12 -export -name "corp.515support.com" -out corp.515support.com.pfx -inkey corp.515support.com.key -in corp.515support.com.crt
+
+
+
+Create a text file of usernames and password hashes:
+$ unshadow /etc/passwd /etc/shadow > crack-this-file
+
+
+
+
+
+---
+SSH to Windows from Linux
+
+In order to SSH into a Windows client from Linux, we must check if the OpenSSH
+server is installed on the Windows client:
+
+> Get-WindowsCapability -Online | ? Name -like 'OpenSSH*'
+
+Name  : OpenSSH.Client~~~~0.0.1.0
+State : Installed
+
+Name  : OpenSSH.Server~~~~0.0.1.0
+State : NotPresent
+
+
+
+If the server is "NotPresent", we must add the server:
+
+> Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+
+
+
+Check that it is running:
+
+> Start-Service sshd
+> Get-Service sshd
+
+
+
+Set the service to startup automatically:
+
+> Set-Service -Name sshd -StartupType 'Automatic'
+
+
+
+Restart the Windows machine. To confirm SSH automatically starts up, run
+an nmap scan from the Linux machine:
+
+tylerbrw@u39190a389f8a59:~$ sudo nmap -sS -O 10.198.136.158
+[sudo] password for tylerbrw: 
+Starting Nmap 7.80 ( https://nmap.org ) at 2023-07-10 04:33 CDT
+Nmap scan report for freeip.amazon.com (10.198.136.158)
+Host is up (0.056s latency).
+Not shown: 994 filtered ports
+PORT     STATE SERVICE
+22/tcp   open  ssh
+80/tcp   open  http
+135/tcp  open  msrpc
+445/tcp  open  microsoft-ds
+2701/tcp open  sms-rcinfo
+3389/tcp open  ms-wbt-server
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose
+Running (JUST GUESSING): Microsoft Windows XP (85%)
+OS CPE: cpe:/o:microsoft:windows_xp::sp3
+Aggressive OS guesses: Microsoft Windows XP SP3 (85%), Microsoft Windows XP SP2 (85%), Microsoft Windows XP SP2 or SP3 (85%)
+No exact OS matches for host (test conditions non-ideal).
+
+OS detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 21.24 seconds
+
+
+
+We can see that ssh is open on 22/tcp, so then from the Linux machine we can
+ssh to Windows:
+
+$ ssh tylerbrw@10.198.136.158
+
+Microsoft Windows [Version 10.0.19045.3086]
+(c) Microsoft Corporation. All rights reserved.
+
+ant\tylerbrw@DESKTOP-KN6GA9U C:\Users\tylerbrw>VER
+
+Microsoft Windows [Version 10.0.19045.3086]
+
+
+Close the connection, on the Windows machine set the default shell to
+PowerShell:
+
+> New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force

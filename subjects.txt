@@ -1,0 +1,1769 @@
+Topics Covered: IT Support Eng 1
+
+Note: open a subnet calculator.
+
+Be humble, show gratitude, be thankful for the opportunity.
+
+    My name is Tyler Wright, I work as equipment coordinator at HOU6 and am a marine corps infantry veteran; 
+	  my interests outside of work include programming, amateur radio, freshwater fishing and physical training.
+
+    My desired role in 3-5 years would be as a specialized engineer programming scripts or systems for Amazon.
+	
+	
+
+////////////////////
+NETWORKING
+
+
+----------
+*Troubleshooting
+
+Use the OSI model:
+  Physical
+  Data-link
+  Network
+  Transport
+  Session
+  Presentation
+  Application
+
+Network events that can occur:
+  -> Connection failures
+       Physical layer. Cables, connectors, etc.
+  -> Security lapses
+       Authentication errors, firewall rules, attacks.
+  -> Monitoring alarms being triggered.
+       Hardware failures, warnings. layer 2/3 protocol warnings
+  -> Application failures
+       There could have been a missed update, drivers, maybe the hardware isn't supported
+  -> Policy failures
+       Contradicting rules
+  -> Endpoint issues
+       Proximity to routers, interface problems, or a remote workers LAN
+
+
+
+Troubleshooting Process
+
+IP configuration checks: assigning a new ip address or renewing the dhcp lease can help.
+                           forgetting the network then signing in again.
+						   
+*Renewing a DHCP Lease
+
+Windows
+  -> cmd
+  -> ipconfig/release
+  -> ipconfig/renew
+
+Linux
+  $ sudo dhclient -r
+  $ sudo dhclient
+  $ ip link show
+
+Ping and tracert: if the IP checks out, the issue may be upstream. pinging and tracert servers
+                    and devices upstream will test their connections and return information of the siignal path.
+
+DNS checks: This will determine whether there is a problem with a server which networks are tryingto connect.
+              nslookup can help us pinpoint the dns issue.
+
+Service provider check: check the status page of providers to see if there is an outage.
+
+Database logs: check the log files for any occurrences. 
+  Full directories, rogue processes, user errors can be found here.
+
+Command-line tools: ipconfig and nslookup. 
+  Others to mention - iptables, netstat, tcpdump, route, arp, and dig
+
+Test environment: Take the device to the cage and compare it to other like devices. 
+  Try and recreate the issue in comparison
+
+
+----------
+*OSI Model
+
+The OSI Model is a logical model used to develop and troubleshoot systems.
+
+7 Application     user interface                                  ssh, dns, ftp, https
+6 Presentation    ---                                             ospf, rip, sip
+5 Session         ---                                             bgp, dhcp
+4 Transport       moves transmitted data                          tcp, udp
+3 Network         transmits data to ip-addresses                  ipv4, icmp, ipv6
+2 Data-link       transmits to macs, the logical specification    mac-addresses
+1 Physical        physical makeup of devices, connection          cables, circuits, ethernet, wifi802.11
+
+
+Application Presentation Session
+How the data is used, presented, initiated and terminated by the end-user. These three layers mesh with one another.
+At these three layers the machine aspect of the data has been abstracted away from the user as much as possible.
+
+The session layer is where the hosts actually establish connetion. The port numbers take the data to the right application here.
+The presentation layer ensures the application can actually manipulate the data eing transmitted. File extensions reside here.
+The application layer is made up of the APIs that piece all this together for the end-user.
+
+
+Transport
+The didgital medium used to move data being transmitted. Assembles and disassembles data being transmitted.
+Stateful Transmission Control Protocol(TCP) connections require an active connection at both ends to transmit reliably.
+Stateless User datagram Protocols(UDP) connections forward transmitted data to the relevant application to be process by that application.
+
+
+Network
+The layer at which packets are created and transmitted to specific addresses across differents networks by the TCP/IP suite.
+MAC addressed aren't used any longer. IPv4 and IPv6 are the addresses used to route the data.
+
+
+Data-link
+This layer defines the logical specication of a physical interface as mac addresses and bridges the logical and physical gap of the model.
+Ethernet frames are transmitted at this level using mac addresses.
+
+
+Physical
+This is the physical design and makeup of actual devices transmitting the electronic data.
+This is the cables, circuits, and physical radio waves(wifi, bluetooth, etc) carrying the data.
+Bits are encoded and decoded by electric signals.
+
+
+
+----------
+*Cabling
+
+cat5/5e    100m
+cat6       100m
+
+Hubs and switches have two different types of ports MDI and MDI-X
+
+Crossover Cable
+wires 1,3 and wires 2,6 are crossed. Wire 1 at one end becomes 3 at the other, 2 at one becomes 6 on the other.
+
+TX 1 ------\ /------ 1 (green-stripe) RX
+TX 2 ---\ /-\------- 2 (green) RX
+RX 3 ----/-/ ------- 3 (orange-stripe) TX
+   4 ---/-\--------- 4 (blue)
+   5 --/---\-------- 5 (blue-stripe)
+RX 6 -/     \------- 6 (orange)
+   7 ---- brstr ---- 7 (brown-stripe)
+   8 ---- brown ---- 8 (brown)
+
+When connecting a pc to a pc? straight cable
+Connecting a switch to a switch? crossover cable
+Connecting a router to a switch? straight cable
+Connecting a switch to a hub? crossover cable to mdi-x straight to mdi
+
+
+*Patch Cables
+used to connect devices of different types
+
+*Crossover cable
+connects two devices of the same type
+
+
+
+----------
+*Hubs
+
+Connects to a pc through twisted-pair cabling.
+
+The function of a hub is to take data from a connected device and forward it to all ports on the hub.
+  In this way, all connected devices can share resources.
+    
+	In a hub all ports are on the same collision domain, there is no logical separation of data,
+      so all data being transmitted on the hub is advertised to all devices connected to the hub.
+	  
+	Every port on a hub is in the same broadcast domain by default. 
+	  So every device running on the data-link layer can reach it.
+
+
+*Collision Domain
+
+The part of the network wherre packets can collide.
+
+This occurs when two devices send a packet at the same time on the shared network segment,
+  the packets eventually meet and collide resulting in the two devices having to retransmit.
+
+Hubs have this issue because every port is on the same collision domain.
+
+Ports onn bridges, switches, or routers have a collision domain for eac port.
+
+
+
+----------
+*Switch
+
+A switch forwards decisions based on MAC address at the data-link layer.
+Each port has its own collsion domain, thereby reducing packet collisions.
+Every port on a switch is in the same broadcast domain by default. 
+So every device running on the data-link layer can reach it.
+
+
+*Unmanaged Swtitch
+a plug and play type of device that connects and configures automatically.
+
+*Managed Switch
+configuration and connection are done by the engineer, offers more control over the system.
+
+
+*Switch Port
+It is a smart network device that functions as a multiport network bridge.
+It sends data packets to designated destination ports using MAC addresses (addresses of the media access control sublayer).
+It receives and forwards data packets from the source to the destination device using the packet switching technology.
+
+
+*Access Port
+An access port transports traffic to and from only the specified VLAN allotted to it.
+Usually, an access port will only have a single VLAN set up on the interface and it carries traffic for just a single VLAN
+
+*Trunk Port
+A trunk port is a specific type of port on a network switch that allows data to flow across a network node for multiple virtual local area networks or VLANs.
+In order to accommodate VLAN trunking, the trunk port routes a data packet that contains a tag(802.1q) in the frame header.
+  This tag designates which VLAN the packet is supposed to be routed to.
+
+*Bridges
+Network bridges combine seperate vlans as if they were one vlan.
+functions by blocking or forwarding data based on the destination MAC address.
+
+*CAM - Content Addressable Memory
+Used in netwroking devices for high-speed switching and routing applications.
+
+
+
+----------
+*VLANS - Virtual Local Area Network
+
+Any broadcast domain that is partitioned and isolated in a computer network at the data-link layer.
+  The primary benefit of VLANs is that it reduces the size of the broadcast domains.
+
+VLANs allow us to group and separate hosts for specific purposes.
+VLANs are good for when we have 200+ hosts.
+
+Allows us to change our routers into L3 switches instead of having a dedicated switch for each VLAN.
+
+VLANs can be configured to each physical port running on dedicated cables, or can use VLAN tagging to
+  send data through trunk ports (ports where data from multiple vlans aggregates).
+
+LAN vs VLAN
+  LAN - the networks packet is advertised to each and every device
+  VLAN - the network packet is sent to only a specific broadcast domain
+
+
+
+----------
+*STP - Spanning Tree Protocol
+
+Layer 2 protocol for switches, allows redundant switched and bridged paths while preventing loops within the network.
+
+STA is used to calculate a loop-free path from an identified root point, with only one active redundant path allowed.
+opste
+Spanning-tree frames are called bridge protocol data units (BPDUs). They are sent and received by all switches in the network
+  at regular intervals and are used to determine the spanning-tree topology.
+
+
+STP ports are in a state of either disabling, blocking, listening, learning, and forwarding.
+
+disabling - does not participate in frame forwarding operations
+Blocking - No frames forwarded. Continues to listen and process BDPUs
+Listening - No frames forwarded. Receives BDPUs and redirects them to a switch module for processing.
+Learning - No frames forwarded. Starts updating address table from processed information. Processes but does not forward frames.
+Forwarding - Frames forwarded. Port continues to receive and process BDPUs, the address table continues to be updated.
+
+How is a loop created?
+STP loops are created when a blocking port in a redundant network transitions to the forwarding state.
+
+Host A sends a layer2 broadcast frame (like an ARP request)
+Both switches flood the frame on all ports
+Both switches receive the same broadcast on different ports
+The switches then flood the duplicate broadcast frame out of their other ports.
+The switches then flood the same boradcast frame out there other ports, etc.
+This is a broadcast storm.
+
+Layer2 broadcasts take up alot of network bandwidth and must be procesed by each host.
+
+
+Spanning Tree in three steps:
+  -> Step 1: elect a root bridge
+       -> bridge priotiy
+       -> bridge ID(mac address)
+       -> root bridge
+
+            This is the path in which all other paths are decided.
+	    Only one switch can be the root bridge.
+	      Root bridge is decided by lowest bridge priority (determined by hello packets) then lowest bridge id(mac address) for the tie.
+	      All switches are the root bridge by default until all BDPUs have been processed.
+
+  -> Step 2: Electing root ports
+       -> path cost or port cost
+       -> root path cost
+       -> root port
+
+            After the bridge is selected, switches locate rdundant paths to
+	      the root bridge and block all but one path.
+	    BDPUs are used to identify.
+	    Port/path cost, based on bandwitdh of the port([speed in Mb]/1000), is used to
+	      to determine the fastest path to the root bridge.
+	    The root path cost is the cumulative port costs to the Root Bridge.
+	    Everything is in relation to the root bridge.
+	    Ports directly connected to the root bridge will be the root ports.
+	      Otherwise the port with the lowest root path cost will be the root port.
+	    The root port transitions to forwarding mode while the redundant path trasnsitions to blocking mode.
+       
+  -> Step 3: Electing designated ports
+       -> path cost or port cost
+       -> root path cost
+            The single port on a switch that sends and receives traffic to and from the root bridge.
+            These are the ports that are advertising the lowest cost to the Root Bridge
+
+portfast mode can be enabled with:
+> spanning-tree portfast
+
+This immediately brings a port from the blocking state into the forwarding state, eliminating the forwarding delay, saving time.
+
+
+
+----------
+*Ethernet frame
+
+Layer2 protocol data unit that uses the underlying ethernet physical layer to transport the payload.
+  The frame is generated in the NIC out of the data sent by the upstream host.
+
+Holds 1500 bytes of data max.
+
+preamble | SFD | dest mac | src mac | EtherType | dest ip | src ip | dest port | src port | Payload | Frame-check sequence
+                -------------------------------- ------------------ -------------------------------- --------------------
+		               |                          |                   |                                |
+			     header                    layer 3             layer 4                          layer 1
+
+Preamble - marks the start of the packet and synchronizes the receiiver to the transmitter
+SFD - marks the end of the preamble
+header - includes dest mac, src mac, and optional ethertype
+payload - the actual data being transmitted
+FCS - detects for corrupted data
+
+The preamble SFD and FCS are removed at layer1
+The header is processed at layer2, this determines whether the
+  packet is being sent and received from the correct hosts
+
+
+
+----------
+*ARP - *Address Resolution Protocol
+Protocol used for discovering link-layer addresses, like mac addresses, associated with IP addresses.
+  ARP is the what makes the transition from data-link to the network layer (vice-versa) possible.
+
+ARP can also be used as an announcement protocol to update host's mappings of device addresses.
+
+
+
+----------
+*Routers
+A router forwards decisions based on IP address between computer networks.
+Separate networks from different subnets and route data around a network using tables and defined routes.
+Routers must have two network interfaces minimum.
+Each port has its own collision domain.
+All ports on a router are in different broadcast domains, routers don't forward broadcasts from one broadcast domain to another.
+
+
+*VRF - Virtual Routing and Forwarding
+Virtual routing and forwarding is a Layer 3 IP-network feature that enables multiple virtual routers to operate on a single physical router.
+  VRF is to routers what VLANs are to switches.
+  
+One or more physcial interfaces or virtual interfaces can have VRFs.
+  The idea is that all of these separate virtual interfaces can run independent routing tables from another,
+    removing IP conflicts and enabling ip overloading of different devices, thus adding to network flexibility.
+      Packets are forwarded only between interfaces on the same VRF.
+
+Through MPLS and a sort of tagging system, VRF is able to capture and organize relevant traffic.	
+
+Benefits of virtual routing and forwarding:
+  -> Virtual creation of multiple routes on one device.
+  -> Enables the management of multiple routing tables.
+  -> MP BGP and MPLS deployment.
+  -> Multiple VPNs
+  -> IP overloading
+  -> Segment network paths with less routers.
+
+
+We can swap routers for L3 switches if we use vlans
+
+-> access routers 2600
+-> distribution routers 4500
+-> core routers 7200 7500
+
+Layer 3 Switch
+Has routing capability
+
+*Tunnels
+Allow for non-IP layer3 packets to be encapsulated in IP packets, allowing them to be routed.
+
+*Default Gateway
+The gatekeeper for a network. Allows for the devices on its network to communicate to other networks and the internet.
+
+First and last addresses of a subnet are always reserved:
+  -> all host bits are 0 to identify the subnet
+  -> all host bits set to 1, this is the broadcast address of the network
+
+
+
+----------
+*IP Packet
+
+-----------------------------------------------------------------
+| version | header length | DSCP | ECN | total length            |
+-----------------------------------------------------------------
+| ID                                   | flags | fragment offset |
+-----------------------------------------------------------------
+| TTL                     |  protocol  | Header checksum         |
+-----------------------------------------------------------------
+|                     source IP                                  |
+-----------------------------------------------------------------
+|                      dest IP                                   |
+-----------------------------------------------------------------
+|                      options                                   |
+-----------------------------------------------------------------
+|                      payload                                   |
+-----------------------------------------------------------------
+
+
+
+----------
+Wireless Controller
+
+A centralized device in the network which is used in combination with lightweight access point protocol to manage access points.
+
+The primary function of a WLC is to maintain the configuration of wireless access points.
+
+The secondary functions include:
+  -> Traffic aggregation 
+  -> Batch management operations across wireless access points
+  -> Local wireless in a pinch
+ 
+ 
+  
+----------
+*DNS - *Domain Name System
+Translates IPs to domain names, basically the phonebook of the internet.
+Uses hierarchical tree base name structure, separating paths with '.'
+  (like how windows and linux directories use slashes)
+
+  -> DNS recursor: this server indexes and searches the DNS record and receives queries
+       through clients like web browsers and makes additional requests to satisfy the clients dns query.
+       The recursor is the server that carrys out all queries to the clients. (the librarian in the library)
+  -> Root name server: Looks like '.' and stores the location of top-level domains
+       serving as a reference for more specific addresses.
+  -> TLDs nameservers: stores info for all the domain names with common extensions (amazon.com -> TLD server = .com)
+  -> Authoritative name server: this is where the specific domain names are translated from IPs,
+       the authoritative nameserver will return the IP of the domain back to the DNS recursor.
+
+Types of *DNS records:
+  -> *A record: Address mapping record or dns host record, stores a hostname and its corresponding IPv4 address
+  -> *AAAA *record: IPv6 record, stores hostaname and the corresponding IPv6 address
+  -> *CNAME - Canonical name record, can alias a hostname to another hostname. When a DNS client requests a
+               record that contains a CNAME, the DNS process is repeated with the alias and hostname.
+  -> *MX record: Mail exchanger record, specifies an SMTP email server for the domain, used to route
+                  outgoing emails to a email server.
+  -> *NS record: Name server records, specify that a DNS zone (example.com) is delegated to a specific
+                  authoritative nameserver, and provides the address of that server.
+  -> *PTR record: Reverse-lookup pointer records, allow a DNS resolver to provide an IP and receive a hostname
+  -> *CERT record: Certificate record, stores encryption certs; PKIX, SPKI, PGP, etc.
+
+*TTL Variable
+Time to live (TTL) is a setting for each dns record that specifies how long a nameserver caches an entry
+  before it expires and a new query needs to be done.
+
+
+DNS *Zones
+A DNS zone is a portion of the DNS namespace that is managed by a specific organization or administrator.
+
+The domain name space is a hierarchical tree, with the DNS root domain at the top.
+  A DNS zone starts at a domain within the tree and can also extend down into subdomains
+    so that multiple subdomains can be managed by one entity.
+
+All the information for a zone is stored in what's called a DNS zone file.
+  The zone file is a plain text file stored in a DNS server that contains an actual
+    representation of the zone and contains all records for every domain within the zone.
+      Zone files must always start with a Start of Authoriity(SOA) record.
+
+
+Configuring DNS
+
+Linux
+  *Note* bind9 can be isntalled and configured to run a dns server on your machine
+
+  Temporary:
+    -> Open /etc/resolv.conf in a text editor with sudo
+    -> Add two primary/alternate sets:
+         nameserver 208.67.222.123     #OpenDNS primary
+         nameserver 208.67.220.123     #OpenDNS alternate
+         nameserver 9.9.9.9            #Quad9 primary
+         nameserver 149.112.112.112    #Quad9 alternate
+    -> Save and quit
+    -> Use the dig commannd to verify the changes
+
+  Permanent:
+    -> Open /etc/systemd/resolved.conf with sudo
+    -> Uncomment the DNS and fallback DNS lines and input the nameservers
+    -> Save and quit
+    -> use the dig command to verify the changes
+
+Windows
+  -> Control Panel
+  -> Network and Sharing center
+  -> Change adapter settings
+  -> Go to the properties of the interface
+  -> Go to the properties of ipv4
+  -> From here you can set a static ip, netmask, and default gateway
+       along with the preferred and alternate dnns servers.
+
+IOS
+  > enable
+  > conf t
+  > ip domain lookup                // enables DNS (enabled by default)
+  > ip name-server [addresses]      // specifies the address of one or more servers
+  
+
+
+----------
+*Dynamic Host Configuration Protocol - *DHCP
+
+The automatic assignment of IP addresses to clients.
+ 
+Clients lease information from the server for a set amount of time the admin defines.
+The host queries for a new address once the lease is up.
+This is typically the same address.
+
+DHCP *Pools
+Groups of IP addresses that are to be assigned IPs by the DHCP server.
+DHCP pools can be defined by the admin.
+
+DHCP servers also allow admins to define what client MAC addresses to specifically service,
+  and to automatically assign the same number to a particular host each time.
+
+Cisco routers can be made into DHCP servers which lease configs for 24 hrs. 
+
+*DORA
+Discovery -> Offer -> Request -> Acknowledge
+
+host A    --->    DCHP DISCOVER(broadcast)    --->    DHCP Server
+host A    <---    DHCP OFFER(unicast)         <---    DHCP Server
+host A    --->    DHCP REQUEST(broadcast)     --->    DHCP Server
+host A    <---    DHCP ACKNOWLEDGE(unicast)   <---    DHCP Server
+
+Cisco IOS
+  Configuring an interface for DHCP:
+    > enable
+    > conf t
+    (config)#sh ip int
+    (donfig)#int vlan 1
+    (config-if)#no ip address dhcp
+    (config-if)#end
+    #sh ip int
+
+
+Linux
+  -> Install the DHCP server
+       $ sudo apt install isc-dhcp-server
+  -> Define atleast one subnet within the dhcp config:
+       $ vi /etc/dhcp/dhcp.conf
+
+       Enter this below the commented lines, then save and exit the file:
+       
+       subnet 10.1.1.0 netmask 255.255.255.0 {
+         range 10.1.1.3 10.1.1.254;
+       }
+
+       subnet 192.168.0.0 netmask 255.255.0.0 {
+       }
+  -> $ sudo systemctl restart isc-dhcp-server
+
+
+*Renewing a DHCP Lease
+
+Windows
+  -> cmd
+  -> ipconfig/release
+  -> ipconfig/renew
+
+Linux
+  $ sudo dhclient -r
+  $ sudo dhclient
+  $ ip link show
+
+
+
+----------
+Packet flow
+
+*Application Layer Packet
+
+-----------------------------------------
+| HTTP message request | HTTP hdr | Data |
+-----------------------------------------
+http, ftp, smb, pop3
+
+
+*Transport Layer Packet
+
+----------------------------------------------------------
+| TCP hdr              | TCP hdr  empty | HTTP hdr | data |
+----------------------------------------------------------
+| TCP Segment          | TCP hdr        | HTTP hdr | data |
+|                      | dest port: 80  |          |      |
+|                      | src port: 5480 |          |      |
+----------------------------------------------------------
+ftp, telnet, smtp, dns, dhcp, http, https
+
+
+*Network Layer Packet
+
+-----------------------------------------------------------------------
+| IP header                 | IP hdr empty | TCP hdr | HTTP hdr | data |
+-----------------------------------------------------------------------
+| IP Packet                    | IP hdr  | tcp hdr   | http hdr | data |
+|                              | dest IP | dest port |          |      |
+|                              | src IP  | src port  |          |      |
+-----------------------------------------------------------------------
+
+
+*Data-Link Layer Frame
+
+---------------------------------------------------------------------------------
+| Data-Link Frame             | mac hdr | ip hdr | tcp hdr | http hdr | data     |
+--------------------------------------------------------------------------------||
+|| Ethernet Frame                                                               ||
+||                                                                              ||
+|| link eth hdr     | mac hdr  | tcp hdr   | http hdr | data | link eth trailer ||
+||                  | dest mac | dest port |                                    ||
+||		    | src mac  | src port  |                                    ||
+---------------------------------------------------------------------------------
+
+PC1s TCP/IP stack Application layer encapsulated the data into an http header
+  then handed the header to the transport layer for the next step.
+
+The Transport Layer encapsulates the http data header into segments adding source
+  and destination tcp ports to the segments, then hands the segments to the Network Layer
+    for packaging using logical addressing.
+
+The Network Layer encapsulated the segments into an IP Packet adding logical source and
+  destination IP addresses to the packet. The packet is handed to the Data-Link Layer for
+    framing using MAC addresses.
+
+The Data-Link layer encapsulates the IP packet into a frame adding source and destination MACs
+  to the frame with an Ethernet header and trailer. The frame is handed to the physical layer
+    for delivery over ethernet.
+
+The Physical Layer converts the frame one-at-a-time into a stream of bits, encoding them into
+  signals based on the transmission medium, the signals are transmitted to the default gateway
+    one-at-a-time.
+
+
+
+---------
+*TCP/IP *Ports
+
+FTP = 20, 21
+SSH/SFTP =  22
+Telnet = 23
+SMTP  = 25
+DNS= 53
+DHCP = 67 68
+HTTP = 80
+POP = 110
+NETBIOS = 137 139
+IMAP = 143
+SNMP = 161 162
+LADP  = 389
+SLP = 427
+HTTPS = 443
+SMB = 445
+
+IMAP (143)
+Internet Message Access Protocol is used by email clients to retrieve mail over TCP/IP. Many management features, but complex.
+
+POP (110)
+Post Office Protocol sends and receives mail at the application layer, offers simpler features.
+
+LPD (515)
+Line printer daemon protocol submits print jobs to a remote printer
+
+
+
+----------
+*TCP/*UDP
+
+Transmission Control Protocol TCP, is connection oriented so the data is transmitted when both clients are connected.
+  TCP results in more reliable transfer of data.
+
+User Datagram Protocol UDP, is connectionless and doesn't require either end to be connected.
+  Data transfers are not guaranteed to be transferred, because both ends don't have to be connected.
+    The data is forwarded to the application when transmitted.
+
+UDP is faster and simpler, but relies on TCP for the retransmission of lost packets.
+
+
+*TCP/IP Model - *4 layer model - *Four Layer Model
+
+Application
+Transport
+Internet
+Link
+
+Application
+Programs that generate and process user data and communicate the data to other programs on another or the same host.
+  These programs take advantage of services provided by lower layers.
+    Protocols that operate at this level are FTP, SMTP, SSH, and HTTP
+
+This layer consists of the application specific protocols that provide user services or exchange data amogst other applications.
+  Data coded with respect to their applications are encapsulated to transport layer protocol units, which trickles down to lower
+    layer protocols.
+
+This layer of the TCP/IP model blends the session, presentation, and application layers of the OSI model together.
+
+
+Transport
+Performs host-host communications on either local or remote networks separated by routers.
+  UDP is the basic protocol at this layer providing connectionless services.
+    TCP is what keeps UDP moving handling flow-control through connection establishment ensuring data delivery.
+
+At the transport layer connectivity is categorized as TCP or UDP.
+  The protocols may provide error control, segmentation, flow control, congestion control and port number assignment.
+
+The concept of the network port for individual applications is conceptualized at the transport layer
+
+
+Internet
+Exchanges datagrams across network boundaries. Provides a standardized networking interface for devices.
+  This layer establishes the internet and the addressing and routing structures its composed.
+    IP is the protocol used for addressing and typically BGP for routing.
+      Data is routed through autonomous systems until it finally reaches its destination.
+
+Sending data from source host to destination host through routers and addressing through IPs.
+  UDP datagrams are primarily used to move data between hosts. TCP ensures the data is reliably delivered.
+    Data is moved on a next-hop basis to get closer to its destination. Packets at the internet layer are
+      sent between multiple networks forming the internet.
+      
+
+Link Layer
+Defines the networking specifications of the local network link in which hosts can communicate without routers.
+  Our layer2 switches employ STP at this level to form the local network topology.
+    The Link layer also describes the physical links at which devices are attached.
+      Virtual link layers can include VPNs and tunnels.
+
+Packets are moved between the internet layer interfaces of two different hosts on the same link.
+  The NIC controls the framing, generation, and transmission of packets over the transport medium.
+
+
+
+----------
+*NAT - Netwrok Address Translation
+
+a way to map multiple local private IP addresses to a public one before transferring the data.
+Allows hosts that are privately addressed to access the internet.
+
+Useful for organizations that employ multiple devices under one IP address.
+  This is helpful for IP conservation, security, and network management.
+
+
+Setting Up NAT
+
+Linux
+  -> Become root
+  -> Allow IP forwarding:
+       # echo 1 > /proc/sys/net/ipv4/ip_forward
+  -> Configure iptables to forward packet from internal network on eth1 to
+       the external network on eth0:
+        # /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+	# /sbin/iptables -A FORWARD -i eth0 -o eth1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+	# /sbin/iptables -A FORWARD -i eth1 -o eth0 -j ACCEPT
+  -> Edit /etc/sysctl.conf so that ipv4 forarding is on at boot:
+       # vi /etc/sysctl.conf
+
+       Change the line value from 0 to 1:
+
+       net.ipv4.ip_forward = 0    ->    net.ipv4.ip_forward = 1
+  -> Ensure IPTABLES_MODULES_UNLOAD, IPTABLES_SAVE_ON_STOP, and IPTABLES_SAVE_ON_RESTART are all
+       set to 'yes' in /etc/sysconfig/iptables-config
+	
+
+
+----------
+*Classless/*Classful *IP Addressing
+
+Classful Adressing seperates IPs into five groups:
+
+A B C D E, ABC are used by the majority of the internet. D E are for special purpose.
+A is for large networks
+B is for medium to large sized networks
+C is for local area networks
+D is reserved for multicasting
+E not usable to the public
+
+Classful addressing isn't used anymore.
+
+*CIDR - *Classless interdomain routing
+
+Aimed to reduce wasted IPs and slow their consumption.
+Enabled VLSM, which is essentially subnetting a subnet.
+Introduced CIDR notation and subnetting.
+Enhanced route aggregation/summarization/supernetting, reducing the size of routing tables.
+  One IP and subnet mask combination can represent the routes to multiple networks.
+  
+  
+*CIDR Notation
+Shorthand way of representing an ip address & netmask pair.
+  -> The network portion of the address is determined by a prefix (network address) and the subnet mask
+
+
+CIDR requires classless protocols
+  -> RIPv2/3
+  -> EIGRP
+  -> OSPF
+  -> IS-IS
+  -> BGP4
+
+A classless routing protocol has the ability to carry subnet masks in their route advertisements.
+
+
+
+----------
+*Reserved IPs
+
+169.254.0.0/16 - APIPA/link-local
+127.0.0.0/8    - loopback
+10.0.0.0/8     - local communications within a network
+192.168.0.0/16 - local communications within a network
+
+First and last addresses of a subnet are always reserved:
+  -> all host bits are 0 to identify the subnet
+  -> all host bits set to 1, this is the broadcast address of the network 
+  
+*Loopback Interface
+
+Loopback interfaces are independent of the state of any physical interface.
+The loopback interface is always up and reachable as long as atleast one of the IP ints on the switch is operational.
+The loopback interface can be used to access the switch through SSH, HTTP, etc and oing the switch to check its status.
+The loopback address can be used as a router ID to identify a router/switch in an ospf area.
+  -> 10.10.1.1
+  -> 127.0.0.1
+  
+> int loopback 0
+> ip add 10.10.1.1 255.255.255.255
+
+
+
+----------
+*IPv4 *IP Address
+
+An IPv4 address is a 32-bit address of four octets separated by periods.
+  These addresses are routed by routers  transmitting data packets using the TCP/IP suite at network layer 3 across computer networks.
+  
+192.168.1.1/24 is an example of a class c, private IPv4 address with a subnet mask of 255.255.255.0
+
+This means that for this subnet there are 254 usable hosts.
+  
+has two different types of IPs:
+  -> externally routed
+  -> internally routed
+
+
+*Private Addressing
+
+Class A - 10.0.0.0/8
+Class B - 172.16.0.0/12
+Class c - 192.168.0.0/16
+
+Addresses reserved for internal networks.
+Cannot be routed on the internet.
+
+Useful for non-public intranets, test labs, and home networks.
+
+
+
+----------
+*Subnetting
+
+To take a larger network and break it down into two or more networks.
+
+192.168.1.0/24 with subnet mask 255.255.255.0 sections a network into 254 usable hosts.
+
+Given the Class B address 190.52.0.0
+The first two octets are the networks bits, routers see the network as 190.52.0.0
+The last two octets are the host bits which can be 52.2.2 and 52.3.2 etc.
+Those addresses are on the same network but separated into .2 and .3 subnets respectively.
+
+
+*Subnet Mask
+A subnet mask is a number that distinguishes the network portion and the host portion of an ip address.
+
+192.168.1.1/24 255.255.255.0
+
+ The network portion is 192.168.1.0 and the host portion is the last octet.
+
+The host portion of the address goes from .1 -.254 making 254 usable addresses within that subnet.
+
+Another subnet 192.168.2.0 can be made with the same netmask creating another 254 host network.
+
+
+*Variable Length Subnet Masking *VLSM
+  Variable-length Subnet Masking - Subnetting a subnet
+    Allows organizations to use more than one subnet mask within the network address space.
+      (i.e. creating a /29 out of a /27)VLSM
+
+
+
+----------
+*IPv6
+
+Written as eight groups of four hexadecimal digits separated by colons.
+
+The first 64 bits are network bits,
+  the next 64 bits are the host bits.
+
+Has three different types of IPs:
+  -> global unicast    externally routed to the internet
+  -> unique local    internally routed
+  -> link local    apipa address, no dhcp/static setup; begin with FD/E80::/8
+
+subnet mask = prefix length
+
+
+
+----------
+*Static Routing
+Manually assigning persistent routes to devices through a gateway router
+  providing their IPs and subnet masks.
+
+Pros
+-> low hardware consumption
+-> Secure operation; doesn't advertise network info to an untrusted source
+-> predictable, prescise control
+
+Cons
+-> high maintenance
+-> not very adaptable (aside from floating static routes)
+
+
+*Setting the IP
+
+Windows
+  -> Control Panel
+  -> Network and Sharing center
+  -> Change adapter settings
+  -> Go to the properties of the interface
+  -> Go to the properties of ipv4
+  -> From here you can set a static ip, netmask, and default gateway
+       along with the preferred and alternate dns servers.
+
+Linux
+  -> Find the interface with ifconfig
+  -> Change the ip of the interface
+       $ sudo ifconfig eth0 192.168.0.10 netmask 255.255.255.0 up
+  -> Assign default gateway
+       $ sudo route add default gw 192.168.1.1
+       $ route    # to confirm
+  ->   Permanent:
+    -> Open /etc/systemd/resolved.conf with sudo
+    -> Uncomment the DNS and fallback DNS lines and input the nameservers
+    -> Save and quit
+    -> use the dig command to verify the changes
+
+IOS
+  > enable
+  #conf t
+  (config)#int vlan 1
+  (config-if)#ip add [ip address] [netmask] [default gateway]
+  (config-if)#end
+  #sh ip int
+  #copy running-config startup-config
+
+  *optional* to remove an ip
+  (config-if)#no ip add
+  (config-if)#sh ip int
+  
+  
+
+----------
+*Dynamic Routing
+
+Used to find routes automatically and reliably through various protocols and their algorithms.
+Doesn't factor simple metrics like hop count.
+Routers information is updated at higher speeds with fast convergence.
+Congestion is controlled with less traffic overhead through incremental updates and route summarization.
+
+Pros
+-> low maintenance
+-> highly adaptable
+
+Cons
+-> higher hardware consumption
+-> high bandwidth utilization
+
+*IGPs:
+
+OSPF - Open Shortest Path First
+Most popular dynamic routing protocol, uses cost as a metric in a link-state al selecting the lowest cost route to transmit.
+
+EIGRP - Enhanced Interior Gateway Protocol
+Link-state and distance vector routing protocol byy Cisco that automates routing configurations within the same AS.
+*supports quad-zero and ip default-network commands*
+
+RIP - Routing Information Protocolv1/v2
+Not used much, older, limited to 15 hops
+
+
+*EGPs:
+
+BGP - Border Gateway Protocol
+Main internet protocol used by routers over the internet. Uses path-vector protocol.
+
+
+
+----------
+*Distance-vector Protocols - RIP, EIGRP
+Each router communicates all the routes it knows about to all other routers to which it is attached.
+The device only knows about the devices that are connected and only knows how to make the next hop in communication.
+Hops are the metric used to determine the distance between devices.
+Uodates are frquent which increases convergence times.
+
+
+*Link-State protocols - OSPF, EIGRP
+Builds a map of the entire network and then holds it in memory. LSAs are sent to all routers on the network,
+  thus every router has a network map.
+
+Routers are updated at a given time or whenever there is a change in the topology, then every router receives the
+  change and updates their network map and routing tables accordingly.
+
+
+*Path-vector protocols - BGP
+Maintains the path information that gets updated dynamically.
+  -> Initiates, shares, and updates.
+
+Each entry in the routing table contains the dest network, next router, and the path to dest
+
+
+----------
+*BGP - Border Gateway Protocol
+
+A path vector protocol used to exchange data between autonomous systems (ASes).
+  BGP is the most common EGP and is thhe protocol of the internet
+
+Autonomous systems represent an independent organization and applies its own unique
+  routing and security policies.
+
+
+
+----------
+*Autonomous System (*AS) Numbers
+
+Used in various routing protocols, AS numbers are assigned in blocks by the IANA to
+  the Regional Interneet Registries who then assign the numbers to network operators.
+
+An Autonomous System is a group of IP networks run by one or more
+  network operators with a single, clearly defined routing policy.
+
+
+
+----------
+*Hot Standby Router Porotcol - *HSRP
+
+HSRP is not a routing protocol, it is a protocol for routers.
+
+HSRP is a Cisco redundancy protocol for establishing a fault-tolerant default gateway.
+  An association between gateways is established in order to achieve default gateway failover
+    if the primary gateway fails.
+
+HSRP gateways send multicast hello messages to the other gateways to notify
+  them of priorities and status (active or standby).
+
+The router with the highest configured priority acts as the virtual router with a pre-defined gateway address.
+  This router responds to the ARP or neighbor requests from machines connected to the LAN with a virtual MAC.
+
+If this router decides to fail, the router with second priority takes over the gateway ip and
+  answers ARP requests with the same MAC at the same port, achieving transparent default gateway failover.
+
+
+
+----------
+*RIP - *Routing Information Protocol
+
+*Distance vector routing protocol at the application layer which employs hop counts as the routing metric.
+
+Easy to configure, but not widely used anymore.
+
+RIPv2 supports CIDR and multicasts routing information to other routers.
+
+More useful protocols include eigrp, ospf, is-is
+
+
+
+----------
+*OSPF - *Open Shortest Path First
+
+OSPF routers build a link-state type database through SPF and Dijkstra's algorithm to create an SPF tree.
+  From the SPF tree a routing table is created.
+
+OSPF falls under interior gateway protocols operating within a single AS.
+
+
+The link is the interface on the router and the link-state is the status of that link.
+
+Features:
+  -> Supports CIDR, VLSM, rapid convergence, partial updates, neighbor discovery.
+  -> Administrator can define route summarization.
+  -> Open standard.
+  -> Scaleable; administratively defined "areas" provide manageable hierarchy
+  -> Difficult to implement
+
+OSPF Cost
+OSPFs metric is based on cost which is associated with the output side of each router interface.
+  Cost is configurable by the sysadmin, the lowest cost interface is the one to most likely forward data traffic.
+
+
+OSPF Areas
+An area is a collection of OSPF routers.
+  Every OSPF router must belong to atleast one area.
+  Every OSPF network must have a backbone area (Area 0)
+  All other areas should touch area 0 (*exceptions)
+  Routers within the same area share link-state information
+
+
+OSPF Neighbors
+5 different types of packets are used to communicate:
+  -> Type 1, hello: establishes and maintains neighbor relationships (interval 10sec)
+       Includes the list of senders.
+       Two way state is reached once it sees itself in the hello packet.
+  -> Type 2, database description packet: describes the contents of an OSPF routers link-state database
+  -> Type 3, link-state request: requests specific pieces of a neighbor router's link-state database
+  -> Type 4, link-state update: transports LSAs(link-state advertisements) to neighbor routers
+  -> Type 5, link-state acknowledgement: neighbor routers acknowledge receipt of the LSAs
+
+
+Steps to OSPF operation:
+  -> Establish router adjacencies
+  -> Electing DR and BDR
+  -> discovering routes
+  -> choosing routes
+  -> maintaining the routes
+
+
+OSPF router states:
+
+  Establishing router adjacencies (with atleast one neighbor)
+    -> down state (initial state, pending init state)
+    -> init state
+    -> two-way state
+
+      Initially, the ospf router int is in the down state pending transition into the init state.
+      An ospf router tries to form an adjacency with atleast one neighbor for each network its connected to.
+      The relationship is formed through type 1 hello packets.
+      The routers transition to a two-way state once they see themselves in the hello packet.
+
+
+  Electing Designated Router(DR) and Backup Designated Router(BDR) (to limit the number of adjacencies)
+    -> ExStart State
+    -> Two way state with all other routers
+ 
+      DRs serve as collection points for LSAs.
+      If there were no designated router the network would flood with advertisements and hang up.
+      If the IP network is multi-access, the routers will elect 1 DR and 1 BDR, to prevent unnecessary LSAs and adjacencies.
+      The router with the highest router id is the DR:
+        10.4.0.0/16 <- DR
+        10.5.0.0/16 <- BDR
+        10.6.0.0/16 <- DRother
+	  although a priority number can be set manually by the sysadmin.
+        All other routers are DRother and they should be multicasting link-state advertisements to the DR and BDR
+        Once election is complete DRothers enter ExStart with the DR and BDR and transition to a two-way state with all other routers.
+
+
+  Discovering routes
+    -> ExStart state
+    -> Exchange state
+    -> loading state: where complete routing info iis exchanged.
+    -> full adjacency state
+
+      To reach full states:
+        -> In the ExStart state, the exchange between two routers begins with the router with the higher ID.(Type2 packet)
+        -> Adjacent routers transition to  Exchange state and trade link-state database summarys with the initiator,
+	     then the routers exchange (type-5) link-state acknowledgement packets with another.
+	-> Routers then transition to the loading state, the initiator requests the entries for adjacent routers networks,
+	     the adjacent router respoonds with a type-4 packet containing the entries. This is where the network discovery happens.
+	-> Once the initiating router confirms the transaction with an ACK the routers enter the FULL ADJACENCY STATE
+
+  Choosing Routes
+    -> Link-state database created.
+    -> Shortest Path First algorithm is run creatiing the SPF tree.
+    -> Dijkstra's algorithm calculates the Shortest Path Tree from the LSAs in the link-state database.
+
+         Routes are chosen on a cost metric, Cost = 10^8/BW.
+	 The cost of a rouute is the sum of all the costs of all the outgoin interfaces to a destination.
+	 Cost decreases as the link-speed increases.
+	 
+  Maintaining routing info
+    -> Maintained through a flooding process
+    -> Any link changes result in a flood of the changed information (notthe whole database)
+    -> LSAs are aged at 30min and flooded every min.
+
+
+
+----------
+*IS-IS - Intermediate System to Intermediate System
+Link-state protocol that uses the Dijkstra algorithm for computing the best path within a network.
+
+IS-IS is vitually the same as OSPF and accomplishes the same goal.
+  The difference between the two lies with how they control areas.
+    IS-IS doesn't require an area 0 backbone.
+
+
+
+----------
+*EIGRP - Enhanced Interior Gateway Routing Protocol
+
+is an advanced distance-vector routing protocol that uses the DUAL FSM and Dijkstra's
+  alorithm to determine the routing tables.
+
+Features:
+  -> Supports CIDR and VLSM, rapid convergence, partial updates, neighbor discovery.
+  -> Automatic route summarization and user-defined route summaries.
+  -> Cisco only
+  -> Scaleable; no hierarchical domains
+  -> Easy to implement
+  -> Compatible with IGRP
+
+The admin sets the bandwidth and delay values,
+  the router dynamically calculates load and reliability.
+
+Differences with IGRP:
+  -> Neighbor discovery and recovery
+  -> Reliable Transport Protocol (RTP)
+       Transport layer protocol developed by Cisco, only runs on EIGRP.
+       Guarantees the delivery of routing information.
+  -> DUAL finite-state machine (FSM)
+       The heart of EIGRP, the route-calculation engine.
+       This program contains all the logic used to calculate and compare routes in an EIGRP network.
+       DUAL FSM selects alternate routes quickly by using info on EIGRP tables
+         and looks for alternate neighbors in case of failures.
+       I have actually written one in Common Lisp and Java.
+  -> PDMs (Protocol Dependent Module)
+       Different protocols can be added to EIGRP.
+
+
+EIGRP routers keep route and topology info in RAM for quick access.
+
+Hello packets establish adjacencies with neighbors.
+As long as an EIGRP router is receiving hello packets from known neighbors, they are valid.
+
+
+Neighbor Table
+  -> Each EIGRP router maintains a neighbor table listing adjacent routers.
+  -> Entries are added and removed as discoverys occur from updates.
+       Table includes: neighbor address, queue count, smooth round trip timer (srtt), and hold time
+  -> Multiple naighbor tables can be kept.
+
+Topology Table
+   -> All entries are in two states: active or passive
+        Passive route - stable, available for use
+	Active routes - unavailable, being computed by DUAL FSM
+   -> Includes route entries for all destinations that the router has learned.
+   -> All learned routes to a destination are maintained in the topology table.
+   -> Stores all info to calculate distances and vectors to reachable detinations.
+   -> Routes are classified as internal or external, this is classified through route tagging.
+        External routes are tagged with:
+	  -> router ID of route distributor
+	  -> AS number of destination
+	  -> Protocol used
+	  -> cost metric received from protocol
+	  -> admin tag
+
+Routing Table
+  -> The best, loop-free routes are input by DUAL FSM.
+  -> Four routes can be maintained per destination.
+  -> Neighbors will be notified of any routing table changes.
+
+Five EIGRP packet types:
+  -> Hello - discovery, verify, rediscover
+  -> ACK - confirms reliable communication
+  -> Update - used for discovery or changes in the topology
+  -> Query - requests for specific information from one or all neighbors
+  -> Reply - responses to puery packets
+
+
+Stuck In Active (SIA) Routes
+  Typically occurs due to:
+    -> router is too busy to answer query
+    -> memory cannot be allocated to the query
+    -> circuit between the two devices is no good
+    -> link becomes unidirectional due to failure
+
+  Troubleshooting SIA:
+    -> Find three routes that are consistently SIA
+         log console messages and review it, the ones stuck in active will be marked
+    -> Find which router is failing to answer queries for those routes
+         use sh ip eigrp topology active command:
+	   -> any neighbors with 'r', the router is waiting on replies from them
+	   -> active timer = how long the route has been active
+	   -> pay attention to routes that have replies outstanding and been active for 2-3min
+    -> Find why that router is not receiving or answering queries
+         Once the router is found we can look for problems on the link to this neighbor,
+	   view resource utilization, etc.
+
+
+
+----------
+*8-DEFAULT-SERVICES *default sevices
+
+  Time - Port 37
+  TACAS - Port 49
+  DNS - 53
+  BOOTP/DHCP - 67 (server)
+  BOOTP/DHCP - 68 (client)
+  TFTP - 69
+  Netbios Name - 137
+  Netbios Datagram - 138
+
+----------
+*IOS Commands
+
+sh run    shows the whole device config
+sh int
+sh int status
+sh mac address-table
+sh int trunk
+sh vlan
+sh ip [bgp ospf etc] neigh
+sh port summary
+sh int summary
+ip routing    turns routing on
+sh ip int br
+sh ip route    view the routing table
+sh ap summary
+sh ap config
+sh 802.11b txpower
+sh ap cdp neighbors
+sh client summary
+sh ip ospf
+sh int - shows bandwisth, delay, load, and reliability values
+sh [protocol] eigrp neigh
+sh ip eigrp topology all
+
+line con 0
+logging synchronous
+exec-timeout 0 0
+
+int eth 0
+ip add [ip-address] [subnet]
+no shut
+
+network [address] [wildcard-mask] area [area-id] - tells oospf what interfaces to send and receive updates on.
+ip helper-address    relay broadcast requestes for the default UDP services (for DHCP)
+
+
+
+----------
+*Networking Tools
+
+ipconfig /all - detailed description of all interfaces including mac addresses
+
+ping
+ping -a    resolves name with ip
+ping -t    continuous ping
+ping 198.160.0.1 -l [size-in-bytes]    pings a specified size to the ip
+
+arp -a     # find the domain, ip, mac, and interface name
+RAD1-PF2M555L.ant.amazon.com (172.17.208.1) at 00:15:5d:fc:71:f9 [ether] on eth0
+
+
+pathping 8.8.8.8    ping and tracert/traceroute(linux) combined
+
+tracert/traceroute 8.8.8.8    traces a route to an ip
+
+tcpdump
+
+iptables
+
+route print    (windows)returns a routing table of route, network, and interface info
+route add /p 192.168.2.0 mask 255.255.255.0 192.168.0.5    adds a persistent route to 192.168.2.0 through
+                                                           the gateway router 192.168.0.5
+(linux/mac)
+dig example.com - retrieves info about DNS name servers
+
+(windows)
+nslookup example.com - retrieves infor about DNS name servers like domain name, IP address mapping, or specific DNS records
+
+netstat - tells which ports on our hosts are open and listening
+
+
+
+
+
+////////////////////
+*LINUX
+
+
+$ uname -r
+5.10.102.1-microsoft-standard-WSL2
+
+$ cat /etc/os-release
+NAME="Ubuntu"
+VERSION="20.04.5 LTS (Focal Fossa)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 20.04.5 LTS"
+VERSION_ID="20.04"
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+VERSION_CODENAME=focal
+UBUNTU_CODENAME=focal
+
+$ lsb_release -a
+No LSB modules are available.
+Distributor ID: Ubuntu
+Description:    Ubuntu 20.04.5 LTS
+Release:        20.04
+Codename:       focal
+
+$ uname -n
+$ uname -r 
+$ uname -s 
+$ uname -n 
+
+
+
+*grep
+Through regular expressions grep prints lines that contain a match
+  of one or more patterns in each file:
+
+grep "example string literal" foo.txt
+
+$ cat /var/log/interface.log | grep "interface error"
+
+$ ifconfig | grep [interface] - get int mac
+
+$ grep -i 'string-literal' [file.txt] - perform a case insensitive search for string-literal in foo.txt
+
+
+
+
+$ping 
+
+$ifconfig | grep ether 
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        ether 00:15:5d:21:50:5e  txqueuelen 1000  (Ethernet)
+
+$ ip link show - get mac addresses
+
+$ route -v 
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         sjc3-co-acc-v1. 0.0.0.0         UG    0      0        0 eth0
+172.26.128.0    0.0.0.0         255.255.240.0   U     0      0        0 eth0
+
+$ route add [target]
+
+$arp -e
+Address                  HWtype  HWaddress           Flags Mask            Iface
+sjc3-co-acc-v1.amazon.c  ether   00:15:5d:be:a6:c8   C                     eth0
+
+$ traceroute [ip-address]
+
+$ tcpdump -D
+1.dummy0 [Up, Running]
+2.eth0 [Up, Running]
+3.lo [Up, Running, Loopback]
+4.any (Pseudo-device that captures on all interfaces) [Up, Running]
+5.bond0 [Up]
+6.bluetooth-monitor (Bluetooth Linux Monitor) [none]
+7.nflog (Linux netfilter log (NFLOG) interface) [none]
+8.nfqueue (Linux netfilter queue (NFQUEUE) interface) [none]
+9.tunl0 [none]
+10.sit0 [none]
+
+
+
+ls -alh - list files in dir with attributes, hidden files, and human readable format
+pwd - show current working directory
+mkdir - create a new directory
+rm -r - remove a file or directory recursively
+cd - change directory
+su - logs in as the root user
+passwd [username] - changes specified users password (must be root)
+sudo - temp elevate user privelages to super user
+
+
+
+*cat [file] - displays the content of file(s) to STDOUT
+cat [file1] [file2]
+cat -n [file] - content of file with line numbers
+cat > newfile.txt - create a new file
+cat [copy-from.txt] > [to-here.txt] - copy the contents of one file to another
+cat append.txt >> to-here.txt - appends contents from one file to the end of another
+
+
+
+head - prints the first 10 lines of file(s) to STDOUT
+tail -n - print the last 10 lines of a file(s) to STDOUT
+cp -r - copy dir and file recursively
+mv foo.txt bar.txt - renames foo to bar
+mv foo.txt ~/Documents/foo.txt - moves foo to that dir
+
+df -h - check storage
+ssh [ip/hostname] -p [port number]
+last - tell last user logged in
+
+chmod (0=-) (1=-x) (2=-w-) (3=-wx) (4=r-) (5=r-x) (6=rw-) (7=rwx)
+chmod me|group|users foo.txt
+chmod 777 foo.txt -> rwx for everyone
+chmod 700 foo.txt -> rwx for me
+chmod 327 foo.txt -> wx for me, w for group, rwx for users
+
+chgrp - change file or directory groups
+chown - grants file ownership to another user
+ifconfig - used to tshoot and configure interfaces
+
+ps -aux - displays running system processes
+top - displays running system processes
+kill - terminate or signal processes
+killall - kill a process by name
+systemctl list-units --type=service --no-pager - list all available units
+systemctl status [example.service] --no-pager - status of the service
+sudo systemctl stop rsyslog.service - stops a service
+sudo systemctl start rsyslog.service - starts a service
+sudo systemctl disable rsyslog.service
+sudo systemctl enable rsyslog.service
+
+telnet isnt secure, ssh is
+
+nslookup [options] [domain/ip]
+
+
+resolv.conf = dns config
+dhcp.conf = dhcp config
+$ sudo dhclient -r
+
+----------
+The *Linux File Structure, File Hierarchy Standard (*FHS)
+
+You can just type:
+$ info hier
+
+/         root directory of the entire filesystem
+/bin      essential command binaries (can be used in single-user mode)
+/boot     boot loader files (kernel, initrd)
+/dev      device files (/dev/disk0 /dev/sda1, etc)
+/etc      host-specific system wide config files, may not contain binaries
+/home     user home directories; contains user files
+/lib      libraries for essential binaries in /bin and /sbin
+/media    mount points for removable media
+/mnt      temprorarily mounted filesystems
+/opt      add-on application software packages
+/proc     virtual filesystem providing processes and kernel info as files
+/root     home directory of the root user
+/run      info about the running systems since last boot; i.e daemons, current users logged in, etc
+/sbin     essential system binaries
+/srv      data served by this system; scripts for servers, ftp files, git repositories, etc
+/sys      info about devices, drivers, and kernel features
+/tmp      temporary files, not typically preserved between reboots
+/usr      secondary hierarchy for read-only user data; contains the majority of user utilities and apps (shareable, read-only)
+/var      files whose content is expected to continuously change during normal operation of the system.
+            Logs, spool files, and temp email files can be found here.
+
+
+
+
+////////////////////
+*WINDOWS
+
+----------
+*Active Directory - *AD
+A directory service for Windows domain networks. Activates and authenticates all users within that Windows domain
+as well as assigning an enforcing policy and software installation and updates.
+
+
+*Group Policy
+Provides sysadmins with the ability to manage and configure users, systems, and applications within a domain in Active Directory Domain Services.
+  It's a centralized management suite for Active Directory.
+    Configurations are done through Group Policy Settings and Group Policy Preferences.
+
+Group Policy Objects (GPOs)
+A set of Group Policy configurations is called a Group Policy Object(GPO).
+
+Group policy could be used to enforce a password creation parameter keeping users from creating simple passwords.
+  It can be used to prevent unidentified users or devices from connecting to a network share.
+    
+
+*Least privelage (*POLP - Principle of Least Privelage)
+Method of restricting users, accounts, and processes to the absolute necessary resources needed to complete tasks.
+
+If group policy fails to update on a Windows client, what to do?
+  -> Check ACME and updates
+  -> Check event viewer for any GPO related events.
+  -> Run gpupdate /force
+
+
+Active Directory Domain Services *ADDS
+Provides the methods for storing directory data and making this data available to users and admins.
+  Account names, passwords, phone numbers, etc are stored, maintained, and distributed here.
+
+Services Provided:
+  -> Domain Services: Stores data and manages communications between the users and the DC.
+  -> Certificate Services: Allows the DC to serve digital certs, signatures, and public key crypto
+  -> Lightweight Directory Services: Supports LDAP for cross-platform domain services, like linux computers on the network
+  -> Directory Federation Services: Provides SSO authentication for multiple applications in the same session.
+       (don't need to keep providing credentials in the same session)
+  -> Rights Management: Controls information rights and data access policies. Determines whether we can
+       access a folder or send an email.
+
+
+Role of *Domain Controlers in ADDS:
+  -> Kerberos Key Distribution Center (KDC): The KDC verifies and encrypts kerberos tickets that AD DS use for authentication.
+  -> NetLogon: Netlogon is the authentication communication service
+  -> Windows Time (W32time): Kerberos requires all computer times to be in sync.
+  -> Intersite Messaging (IsmServ): Intersite messaging allows DCs to communicate with eachother for replication and site-routing
+
+
+*Active Directory Objects
+Entities that represent a resource such as users, computers, printers, etc that are part of an AD network.
+  Each object is defined by attributes. Just like in OOP. Attributes would include name, number, email, etc of a user.
+    These attributes can be used to search for the objects through LDAP queries.
+
+The object attributes are defined bby object classes. Object classes and their attributes combine together to form the
+  Active Directory network schema. The schema supplies blueprints for these objects and their attributes.
+    There are three types of object classes:
+      -> Abstract: a top-level class that only defines the basic attributes of an object.
+      -> Structural: main component that defines an object and what attributes it should have.
+      -> Auxiliary : contains additional attributes that the other classes can inherit from.
+
+
+ 
+----------
+*APIPA - *Automatic Private IP Addressing (Microsoft)
+
+What would assign an address of *169.254.0.1?
+APIPA
+
+Allows an LAN computer to give itself a unique IP address when DHCP is unavalable,
+  so that the device can connect to the internet.
+
+Typically occurs when there is no dhcp server configured,
+  or no static addressing configured.
+
+
+
+----------
+Powershell
+
+a command-line and scripting language developed by Microsoft.
+Powershell is a lot more capable than cmd allowing configuration of even remote Linux systems.
+
+
+
+----------
+What is the Windows *\u2019s hosts file?
+  A plain-text file that maps hostnames to IP addresses.
+  Like the Linux /etc/hosts file.
+  With DNS the hosts file lost its original usefulness, but it is still useful for:
+    Blocking a website from accessing your system by pointing the website to 0.0.0.0 in the hosts file.
+
+
+
+----------
+What utility would you use to find if an IP address has an associated domain name>
+  nslookup - we can use this tool for troubleshooting name resolution to check ip-address/domain-name relationships
+
+
+
+----------
+*Exchange Server *CAS - *Client Access Services
+
+In Exchange server, the Client Access services on mailbox servers provide authentication and proxy
+  services for internal and external client connections. The Client Access Services are stateless,
+    so data isn't stored in them. The CAS are a part of the mailbox server so a standalone CAS can't
+      be configured like they used to.
+
+
+
+----------
+*SYSVOL
+Refers to the set of files and folders that reside on the local hard disk of each domain controller
+  in a domain that are replicated and distributed by the File Replication Service or the Distributed File System.
+
+This folder cosists of the domain public files that are accessed by clients and kept in sync between domain controllers.
+
+The default location of the SYSVOL folder is C:\Windows\SYSVOL
+
+
+
+----------
+Difference between a .pst and .ost file?
+
+  A .pst file is an Outlook archive created on a Windows machine.
+  A .ost file is related to Microsoft Exchange.
+
+
+
+----------
+How would you create a new outlook profile?
+
+    Windows:
+        Connect to the amazon network.
+        Control Panel -> Mail -> Profiles -> Add
+        Create a name different from the default
+        Select 'Always Choose This Profile' -> Start Outlook
+        The credentials will auto-fill, click next.
+        Once checks are green, finish.
+        Select the profile from the list.
+        Open Outlook and it will begin creating a local copy of the email account.
+        Once this completes the account is up and any archives can be imported.
+
+
+
+----------
+If you have a printer that is Printing Random text. What does this typically mean?
+
+    Drivers need updating or the queue/cache needs to be cleared.
+
+
+
+----------
+A customer brings their computer and says it has a virus on it. How would you handle this situation?
+
+    For any situation involving potential breach of security, the system must be disconnected from all types of communication.
+    A ticket has to be cut to Security with the appropriate CTI.
+    No one log into the machine.
+    Reset network and account passwords.
+    If the user or previous users posess a top-secret clearance, escalate the ticket to sev-2 to Security with the correct CTI.
+    Scan associates home network share drive for potential threats and isolate them.
+    Replace the hard drive with a new one.
+    Image the drive with a fresh OS install and return the system to the associate.
+    Externally connect the infected drive to an isolated system.
+    Boot the dummy system with a live disk of the same OS, run an only-scan of the infected disk for malware.
+    Make note of the malware and keep everything the same.
+    Shut the system down disconnect the drive.
+    Update the ticket and wait for further instruction.
+
+
+
+----------
+You are working on a Windows 10 computer and it won't connect to the internet. Can you take me through your troubleshooting steps?
+    
+    Connect the system to ethernet and check device compliance.
+    Open PowerShell
+        check network interfaces with ipconfig
+            If the address begins with 169 then the dns server is down and may need to be temprorarily changed.
+                Settings -> Network & Internet -> Change Adapter Settings ->
+                Right-click desired connection -> Properties -> IPv4 -> Properties -> enter an alternative [approved] dns server ip
+        ping something
+    Check network interfaces in Device Manager and update drivers.
+        If network interfaces are missing, open the system to check there connection/existence.
+    Forget the network then sign into the network again.
+    Reboot the system running through the steps again.
+
+
+
+----------
+How to rebuild a Windows profile?
+   As admin create a new user profile in Users, then transfer all contents from /OLDUSER to /NEWUSER.
+
+In a domain environment, what are cached credentials?
+  Allows a user to access system resources when a domain controller is temporarily unavailable.
+  After a successful logon, some of the user's information is cached. Later that user can log on
+    to the computer by using the domain account even if the domain controller is unavailable.
+
+
